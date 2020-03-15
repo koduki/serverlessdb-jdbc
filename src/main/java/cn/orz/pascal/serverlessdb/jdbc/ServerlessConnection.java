@@ -30,8 +30,13 @@ import java.util.concurrent.Executor;
  */
 public class ServerlessConnection implements Connection {
 
-    public ServerlessConnection(String uri, Properties info) throws SQLException {
-        System.out.println("jdbc uri: " + uri);
+    private RpcClient client;
+
+    public ServerlessConnection(String url, Properties info) throws SQLException {
+        System.out.println("jdbc url: " + url);
+        System.out.println("database name: " + info.getProperty("dbname"));
+
+        this.client = new RpcClient(url, info.getProperty("dbname"));
     }
 
     @Override
@@ -41,7 +46,7 @@ public class ServerlessConnection implements Connection {
 
     @Override
     public Statement createStatement() throws SQLException {
-        return new ServerlessStatement();
+        return new ServerlessStatement(client);
     }
 
     @Override

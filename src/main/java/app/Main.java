@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        var url = "jdbc:serverlessdb://localhost:8080/testdb";
+        var url = "jdbc:serverlessdb://http://172.28.134.216:8080/testdb";
 
         Class.forName("cn.orz.pascal.serverlessdb.jdbc.ServerlessDriver");
         try (var con = DriverManager.getConnection(url); var st = con.createStatement()) {

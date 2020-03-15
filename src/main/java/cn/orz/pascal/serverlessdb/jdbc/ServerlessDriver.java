@@ -35,7 +35,14 @@ public class ServerlessDriver implements Driver {
         if (!url.startsWith(URI_PREFIX)) {
             return null;
         }
-        return new ServerlessConnection(url, info);
+
+        var xs = url.split("/");
+        var protocol = xs[2];
+        var hostname = xs[4];
+        var dbname = xs[5];
+        info.put("dbname", dbname);
+
+        return new ServerlessConnection(protocol + "//" + hostname, info);
     }
 
     @Override

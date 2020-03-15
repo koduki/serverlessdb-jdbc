@@ -17,6 +17,12 @@ import java.io.IOException;
  */
 public class ServerlessStatement implements java.sql.Statement {
 
+    private RpcClient client;
+
+    public ServerlessStatement(RpcClient client) {
+        this.client = client;
+    }
+
     @Override
     public boolean execute(String sql) throws SQLException {
         System.out.println("execute sql: " + sql);
@@ -28,14 +34,13 @@ public class ServerlessStatement implements java.sql.Statement {
     public ResultSet executeQuery(String sql) throws SQLException {
         System.out.println("execute sql: " + sql);
         try {
-            var resultData = RpcClient.callQuery(sql);
-            var result = new ServerlessResultSet(resultData);
+            var resultData = client.callExecuteQuery(sql);
+            var resultSet = new ServerlessResultSet(resultData);
 
-            return result;
+            return resultSet;
         } catch (IOException | InterruptedException ex) {
-            throw new RuntimeException(ex);
+            throw new SQLException(ex);
         }
-
     }
 
     @Override
