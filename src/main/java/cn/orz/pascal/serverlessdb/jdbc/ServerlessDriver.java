@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cn.orz.pascal.jdbc;
+package cn.orz.pascal.serverlessdb.jdbc;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -17,13 +17,13 @@ import java.util.logging.Logger;
  *
  * @author koduki
  */
-public class MyDriver implements Driver {
+public class ServerlessDriver implements Driver {
 
-    private static final String URI_PREFIX = "jdbc:myjdbc://";
+    private static final String URI_PREFIX = "jdbc:serverlessdb://";
 
     static {
         try {
-            java.sql.DriverManager.registerDriver(new MyDriver());
+            java.sql.DriverManager.registerDriver(new ServerlessDriver());
         } catch (SQLException ex) {
             throw new RuntimeException("Can't register driver!");
         }
@@ -35,7 +35,7 @@ public class MyDriver implements Driver {
         if (!url.startsWith(URI_PREFIX)) {
             return null;
         }
-        return new MyConnection(url, info);
+        return new ServerlessConnection(url, info);
     }
 
     @Override

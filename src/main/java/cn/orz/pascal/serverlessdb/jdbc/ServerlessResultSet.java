@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cn.orz.pascal.jdbc;
+package cn.orz.pascal.serverlessdb.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -27,23 +27,31 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
  * @author koduki
  */
-public class MyResultSet implements java.sql.ResultSet {
+public class ServerlessResultSet implements java.sql.ResultSet {
 
-    private final Iterator<List<String>> itr;
-    private List<String> current;
+    private final Iterator<Map> itr;
+    private Map current;
 
-    public MyResultSet(List<List<String>> source) {
+    public ServerlessResultSet(List<Map> source) {
         this.itr = source.iterator();
     }
 
     @Override
     public String getString(int index) throws SQLException {
-        return current.get(index - 1);
+        int i = 1;
+        for (Map.Entry x : (Set<Map.Entry>) current.entrySet()) {
+            if (i == index) {
+                return String.valueOf(x.getValue());
+            }
+            i++;
+        }
+        throw new ArrayIndexOutOfBoundsException(index);
     }
 
     @Override

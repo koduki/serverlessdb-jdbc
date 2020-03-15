@@ -1,3 +1,5 @@
+package app;
+
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,12 +11,12 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        var url = "jdbc:myjdbc://localhost:80/testdb";
+        var url = "jdbc:serverlessdb://localhost:8080/testdb";
 
-        Class.forName("cn.orz.pascal.jdbc.MyDriver");
+        Class.forName("cn.orz.pascal.serverlessdb.jdbc.ServerlessDriver");
         try (var con = DriverManager.getConnection(url); var st = con.createStatement()) {
             st.execute("INSERT DUMMY SQL");
-            try (var rs = st.executeQuery("SELECT DUMMY SQL")) {
+            try (var rs = st.executeQuery("SELECT name FROM sample_tbl")) {
                 while (rs.next()) {
                     System.out.println("rs[1]=" + rs.getString(1));
                 }
