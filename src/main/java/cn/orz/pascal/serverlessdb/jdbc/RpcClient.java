@@ -20,8 +20,8 @@ import java.util.Map;
  */
 public class RpcClient {
 
-    private String url;
-    private String dbname;
+    private final String url;
+    private final String dbname;
 
     public RpcClient(String url, String dbname) {
         this.url = url;
@@ -29,18 +29,7 @@ public class RpcClient {
     }
 
     public List<Map> callExecuteQuery(String sql) throws IOException, JsonProcessingException, InterruptedException {
-        var params = new HashMap<String, String>();
-        params.put("sql", sql);
-
-        var httpClient = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .build();
-        var request = HttpRequest.newBuilder()
-                .POST(ofFormData(params))
-                .uri(URI.create(String.format(this.url + "/sql/execute_query")))
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .build();
-        var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        var response = call("execute_query", sql);
         var json = response.body();
         var mapper = new ObjectMapper();
         var result = Arrays.asList(mapper.readValue(json, Map[].class));
@@ -48,15 +37,39 @@ public class RpcClient {
         return result;
     }
 
-    private HttpRequest.BodyPublisher ofFormData(Map<String, String> data) {
+    public int callExecuteUpdate(String sql) throws IOException, JsonProcessingException, InterruptedException {
+        var response = call("execute_update", sql);
+        var result = Integer.parseInt(response.body());
+
+        return result;
+    }
+
+    private HttpResponse<String> call(String method, String sql) throws InterruptedException, IOException {
+        var params = new HashMap<String, String>();
+        params.put("sql", sql);
+        params.put("dbname", this.dbname);
+
+        var httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
+        var request = HttpRequest.newBuilder()
+                .POST(buildFormDataFrom(params))
+                .uri(URI.create(String.format(this.url + "/sql/" + method)))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+        var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return response;
+    }
+
+    private HttpRequest.BodyPublisher buildFormDataFrom(Map<String, String> data) {
         var builder = new StringBuilder();
-        for (Map.Entry<String, String> entry : data.entrySet()) {
+        for (var entry : data.entrySet()) {
             if (builder.length() > 0) {
                 builder.append("&");
             }
-            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
+            builder.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
             builder.append("=");
-            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+            builder.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
         return HttpRequest.BodyPublishers.ofString(builder.toString());
     }

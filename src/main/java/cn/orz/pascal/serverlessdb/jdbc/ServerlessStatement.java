@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,8 +33,18 @@ public class ServerlessStatement implements java.sql.Statement {
     }
 
     @Override
+    public int executeUpdate(String sql) throws SQLException {
+        System.out.println("executeUpdate sql: " + sql);
+        try {
+            return client.callExecuteUpdate(sql);
+        } catch (IOException | InterruptedException ex) {
+            throw new SQLException(ex);
+        }
+    }
+
+    @Override
     public ResultSet executeQuery(String sql) throws SQLException {
-        System.out.println("execute sql: " + sql);
+        System.out.println("executeQuery sql: " + sql);
         try {
             var resultData = client.callExecuteQuery(sql);
             var resultSet = new ServerlessResultSet(resultData);
@@ -46,11 +58,6 @@ public class ServerlessStatement implements java.sql.Statement {
     @Override
     public void close() throws SQLException {
         System.out.println(this.getClass().getSimpleName() + " close");
-    }
-
-    @Override
-    public int executeUpdate(String sql) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

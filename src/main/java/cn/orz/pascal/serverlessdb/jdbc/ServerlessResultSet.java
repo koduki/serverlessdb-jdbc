@@ -43,15 +43,20 @@ public class ServerlessResultSet implements java.sql.ResultSet {
     }
 
     @Override
-    public String getString(int index) throws SQLException {
+    public String getString(int columnIndex) throws SQLException {
         int i = 1;
         for (Map.Entry x : (Set<Map.Entry>) current.entrySet()) {
-            if (i == index) {
+            if (i == columnIndex) {
                 return String.valueOf(x.getValue());
             }
             i++;
         }
-        throw new ArrayIndexOutOfBoundsException(index);
+        throw new ArrayIndexOutOfBoundsException(columnIndex);
+    }
+
+    @Override
+    public int getInt(int columnIndex) throws SQLException {
+        return Integer.parseInt(getString(columnIndex));
     }
 
     @Override
@@ -87,11 +92,6 @@ public class ServerlessResultSet implements java.sql.ResultSet {
 
     @Override
     public short getShort(int columnIndex) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int getInt(int columnIndex) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
