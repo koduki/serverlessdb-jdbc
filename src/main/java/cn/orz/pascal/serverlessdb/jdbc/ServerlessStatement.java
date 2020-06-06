@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +18,8 @@ import java.util.logging.Logger;
  *
  * @author koduki
  */
-public class ServerlessStatement implements java.sql.Statement {
+public class ServerlessStatement implements Statement {
+    private SQLWarning sqlWarn = null;
 
     private RpcClient client;
 
@@ -102,12 +104,15 @@ public class ServerlessStatement implements java.sql.Statement {
 
     @Override
     public SQLWarning getWarnings() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(sqlWarn == null){
+            sqlWarn = new SQLWarning();
+        }
+        return sqlWarn;
     }
 
     @Override
     public void clearWarnings() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        sqlWarn = null;
     }
 
     @Override

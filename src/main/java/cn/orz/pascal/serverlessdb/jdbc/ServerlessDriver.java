@@ -47,7 +47,7 @@ public class ServerlessDriver implements Driver {
 
     @Override
     public boolean acceptsURL(String url) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
